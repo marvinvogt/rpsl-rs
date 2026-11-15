@@ -16,6 +16,7 @@
       in
       {
         packages = {
+          nix-direnv     = pkgs.nix-direnv;
           rust-toolchain = rustToolchain;
           rust-analyzer  = pkgs.rust-analyzer;
 

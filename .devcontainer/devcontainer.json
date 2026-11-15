@@ -1,11 +1,12 @@
 {
   "name": "NIX",
   "image": "mcr.microsoft.com/devcontainers/base:noble",
+  "remoteUser": "vscode",
   "features": {
     "ghcr.io/devcontainers/features/nix:1": {
-      		"extraNixConfig": "experimental-features = nix-command flakes"
-    	},
-		"ghcr.io/devcontainers-community/features/direnv:1": {}
+      "extraNixConfig": "experimental-features = nix-command flakes"
+    },
+    "ghcr.io/devcontainers-community/features/direnv:1": {}
   },
   "customizations": {
     "vscode": {
@@ -26,5 +27,5 @@
   "remoteEnv": {
     "PATH": "/home/vscode/.nix-profile/bin:/nix/var/nix/profiles/default/bin:${containerEnv:PATH}"
   },
-  "postCreateCommand": "nix profile add .#rust-toolchain .#rust-analyzer"
+  "postCreateCommand": "nix profile add .#nix-direnv .#rust-toolchain .#rust-analyzer && mkdir -p \"$HOME/.config/direnv\" && nix_direnvrc=\"$HOME/.nix-profile/share/nix-direnv/direnvrc\" && test -f \"$nix_direnvrc\" && printf 'source %s\\n' \"$nix_direnvrc\" > \"$HOME/.config/direnv/direnvrc\""
 }

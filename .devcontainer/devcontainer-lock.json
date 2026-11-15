@@ -1,0 +1,14 @@
+{
+  "features": {
+    "ghcr.io/devcontainers-community/features/direnv:1": {
+      "version": "1.0.0",
+      "resolved": "ghcr.io/devcontainers-community/features/direnv@sha256:e0266877bb3935f243eaf70b3192182170f4f8c5cd86108e2509de2eff082ef5",
+      "integrity": "sha256:e0266877bb3935f243eaf70b3192182170f4f8c5cd86108e2509de2eff082ef5"
+    },
+    "ghcr.io/devcontainers/features/nix:1": {
+      "version": "1.4.1",
+      "resolved": "ghcr.io/devcontainers/features/nix@sha256:525789b2fead31ab36aa2f6fc8d2b62c5cdb5105714233c55afe77588d054dca",
+      "integrity": "sha256:525789b2fead31ab36aa2f6fc8d2b62c5cdb5105714233c55afe77588d054dca"
+    }
+  }
+}
