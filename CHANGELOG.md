@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Internal
 
 - Make release recipes portable across GNU/Linux and macOS.
+- Fix release note extraction in the release recipe on macOS.
 
 ## [3.0.0] - 2026-01-30
 

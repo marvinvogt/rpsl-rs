@@ -71,7 +71,7 @@ release-latest-version version:
     set -euxo pipefail
     PREVIOUS_RELEASE=$(gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name')
     CURRENT_RELEASE="v{{ version }}"
-    CHANGES=$(sed -n "/^## \[{{ version }}]/,/^## \[[0-9].*\]/ {//!p}" {{ CHANGELOG_FILE }})
+    CHANGES=$(sed -n "/^## \[{{ version }}]/,/^## \[[0-9].*\]/ {//!p;}" {{ CHANGELOG_FILE }})
     RELEASE_NOTES="
     ## What's Changed
 
