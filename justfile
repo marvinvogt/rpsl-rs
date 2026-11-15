@@ -44,7 +44,7 @@ check-features:
     cargo hack check --each-feature --no-dev-deps
 
 # Bump our version
-bump-version $VERSION: _check_clean_working (_validate_semver VERSION) && (_changelog_add_version VERSION) (_bump_version_pr VERSION)
+bump-version $VERSION: _check_clean_working _check_gh_cli (_validate_semver VERSION) && (_changelog_add_version VERSION) (_bump_version_pr VERSION)
     #!/usr/bin/env bash
     set -euxo pipefail
 
@@ -65,13 +65,22 @@ bump-version $VERSION: _check_clean_working (_validate_semver VERSION) && (_chan
     git add Cargo.toml Cargo.lock
     git commit -m "Bump version to v{{ VERSION }}"
 
-# Create a GitHub release containing the latest changes
-release-latest-version version:
+# Tag the latest version on main, create a draft GitHub release and start the release workflow
+release-latest-version version: _check_gh_cli (_validate_semver version)
     #!/usr/bin/env bash
     set -euxo pipefail
-    PREVIOUS_RELEASE=$(gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name')
     CURRENT_RELEASE="v{{ version }}"
-    CHANGES=$(sed -n "/^## \[{{ version }}]/,/^## \[[0-9].*\]/ {//!p}" {{ CHANGELOG_FILE }})
+    PREVIOUS_RELEASE=$(gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name')
+
+    git fetch origin main
+    TARGET=$(git rev-parse origin/main)
+    TARGET_VERSION=$(git show "$TARGET:Cargo.toml" | sed -n '/^\[package\]$/,/^\[/ s/^version = "\([^"]*\)"$/\1/p')
+    if [ "$TARGET_VERSION" != "{{ version }}" ]; then
+        echo "Version on main is $TARGET_VERSION, expected {{ version }}"
+        exit 1
+    fi
+
+    CHANGES=$(git show "$TARGET:{{ CHANGELOG_FILE }}" | sed -n "/^## \[{{ version }}]/,/^## \[[0-9].*\]/ {//!p;}")
     RELEASE_NOTES="
     ## What's Changed
 
@@ -80,7 +89,11 @@ release-latest-version version:
     **Full Changelog**: {{ REPO_URL }}/compare/$PREVIOUS_RELEASE...$CURRENT_RELEASE
     "
 
-    gh release create $CURRENT_RELEASE --latest --title $CURRENT_RELEASE --notes-file - <<< "$RELEASE_NOTES"
+    # Draft releases do not create their tag, so tag the release commit explicitly.
+    git tag -a "$CURRENT_RELEASE" -m "$CURRENT_RELEASE" "$TARGET"
+    git push origin "refs/tags/$CURRENT_RELEASE"
+    gh release create "$CURRENT_RELEASE" --draft --verify-tag --title "$CURRENT_RELEASE" --notes-file - <<< "$RELEASE_NOTES"
+    gh workflow run release.yml --ref "$CURRENT_RELEASE" -f tag="$CURRENT_RELEASE"
 
 # Publish the crate
 publish: _validate_version_tag
@@ -89,6 +102,14 @@ publish: _validate_version_tag
 # Check that Git has a clean working directory
 _check_clean_working:
     test -z "$(git status --porcelain)" || (echo "The working directory is not clean"; exit 1)
+
+# Check that the GitHub CLI is installed and authenticated
+_check_gh_cli:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    command -v gh > /dev/null || (echo "GitHub CLI is not installed"; exit 1)
+    gh auth status > /dev/null || (echo "GitHub CLI is not authenticated. Run: gh auth login"; exit 1)
 
 # Validate that the crate version matches that of the git tag
 _validate_version_tag:
