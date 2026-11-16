@@ -82,3 +82,9 @@ To release a new version of `rpsl-rs`, perform the following steps.
 - If the recipe fails after pushing the tag, run its remaining commands by hand.
 
 - If the workflow fails after the crate was published, use "Re-run failed jobs" instead of starting the workflow again, since the same crate version cannot be published twice.
+
+- If the publish job failed but the version is already on [crates.io](https://crates.io/crates/rpsl-rs), for example because cargo timed out after uploading, publish the draft release by hand.
+
+  ```sh
+  gh release edit v$NEW_VERSION --draft=false --latest
+  ```

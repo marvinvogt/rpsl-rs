@@ -12,13 +12,15 @@ on:
 permissions:
   contents: read
 
+# Serialize all releases so an older release can never be marked as latest after a newer one.
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.tag }}
+  group: ${{ github.workflow }}
   cancel-in-progress: false
 
 jobs:
   cargo-publish:
     permissions:
+      contents: read
       # Exchange GitHub's OIDC token for a short-lived crates.io publishing token.
       id-token: write
     runs-on: ubuntu-latest
