@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Internal
 
 - Make release recipes portable across GNU/Linux and macOS.
+- Publish releases from a draft-first workflow compatible with immutable releases, only publishing the GitHub release once the crate is published.
+- Fix extracting release notes from the changelog with BSD sed on macOS.
 
 ## [3.0.0] - 2026-01-30
 
