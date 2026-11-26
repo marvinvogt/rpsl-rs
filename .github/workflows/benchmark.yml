@@ -19,14 +19,14 @@ jobs:
         with:
           persist-credentials: false
       - uses: actions-rust-lang/setup-rust-toolchain@a188e68d0fd2bd36ad51dccb2b07ba6e75105f30 # v2.0.1
-      - uses: taiki-e/install-action@4a76afe23f9e08d2d9550fb56e556444e8611d21 # v2.90.4
+      - uses: taiki-e/install-action@25f51f6b1bf4e18876107cece836f4f77ac17c8c # v2.90.7
         with:
           tool: cargo-codspeed
 
       - name: Build the benchmark target(s)
         run: cargo codspeed build
       - name: Run the benchmarks
-        uses: CodSpeedHQ/action@af75f77f17a054769abefaa42fe8dc2975469b5f # v5.6.3
+        uses: CodSpeedHQ/action@b1f28b5eccf7cb5bfe6a2a89cb3053eb67f1150c # v5.8.0
         with:
           run: cargo codspeed run
           mode: instrumentation
